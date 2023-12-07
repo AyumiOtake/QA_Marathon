@@ -15,7 +15,9 @@
           <tr>
             <th scope="col">#</th>
             <th scope="col">Company Name</th>
-            <th scope="col">Contact</th>
+            <th scope="col">Industry</th>
+            <th scope="col">Industry</th>
+            <th scope="col">Location</th>
           </tr>
         </thead>
         <tbody id="customer-list">
@@ -41,9 +43,13 @@
             const cell1 = row.insertCell(0);
             const cell2 = row.insertCell(1);
             const cell3 = row.insertCell(2);
+            const cell4 = row.insertCell(3); 
+            const cell5 = row.insertCell(4); 
             cell1.textContent = index + 1;
-            cell2.textContent = customer.companyname;
-            cell3.textContent = customer.contact;
+            cell2.textContent = customer.company_name;
+            cell3.textContent = customer.industry;
+            cell4.textContent = customer.contact;
+            cell5.textContent = customer.location;
           });
         })
         .catch((error) => console.error(error));

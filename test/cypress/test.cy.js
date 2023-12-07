@@ -10,7 +10,7 @@ describe('顧客情報入力フォームのテスト', () => {
     cy.fixture('customerData').then((data) => {
       // フォームの入力フィールドにテストデータを入力
       const uniqueContactNumber = `03-${Math.floor(1000 + Math.random() * 9000)}-${Math.floor(1000 + Math.random() * 9000)}`;
-      cy.get('#companyName').type(data.companyName);
+      cy.get('#company_name').type(data.company_name);
       cy.get('#industry').type(data.industry);
       cy.get('#contact').type(uniqueContactNumber);
       cy.get('#location').type(data.location);
@@ -22,7 +22,7 @@ describe('顧客情報入力フォームのテスト', () => {
     cy.get('@alertStub').should('have.been.calledOnceWith', '顧客情報が正常に保存されました。');
 
     // フォームがリセットされたことを確認
-    cy.get('#companyName').should('have.value', '');
+    cy.get('#company_name').should('have.value', '');
     cy.get('#industry').should('have.value', '');
     cy.get('#contact').should('have.value', '');
     cy.get('#location').should('have.value', '');
