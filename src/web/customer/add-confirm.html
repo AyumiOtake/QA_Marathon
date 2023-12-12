@@ -2,21 +2,65 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>案件情報入力</title>
-    <!-- Bootstrap CSSの読み込み -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
     <div class="container mt-5">
-        <!-- ここにHTMLを書く -->
+        <h2 class="mb-4">顧客情報を確認してください</h2>
+        <div id="confirmation-details"></div>
+        <button type="button" class="btn btn-primary" id="editButton">編集</button>
+        <button type="button" class="btn btn-primary" id="submitButton">送信</button>
     </div>
     <script type="module">
-        <!-- ここにJSを書く -->
+        const config = {
+            apiUrl: 'http://localhost:13519'
+        };
+
+        window.addEventListener('load', displayConfirmation);
+
+        function displayConfirmation() {
+            const formDataString = sessionStorage.getItem('formData');
+            if (formDataString) {
+                const formData = JSON.parse(formDataString);
+                const confirmationDetails = document.getElementById('confirmation-details');
+
+                for (const [key, value] of Object.entries(formData)) {
+                    const confirmationItem = document.createElement('div');
+                    confirmationItem.textContent = `${key}: ${value}`;
+                    confirmationDetails.appendChild(confirmationItem);
+                }
+            }
+        }
+
+        document.getElementById('editButton').addEventListener('click', function() {
+            window.location.href = 'add.html';
+        });
+
+        document.getElementById('submitButton').addEventListener('click', function() {
+            const formDataString = sessionStorage.getItem('formData');
+            const formData = JSON.parse(formDataString);
+
+            // データベースにデータを送信
+            fetch(`${config.apiUrl}/add-customer`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('顧客情報が正常に登録されました。');
+                    // ここでリダイレクトなど必要な処理を実行
+                } else {
+                    alert('顧客情報の登録に失敗しました。');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('エラーが発生しました。');
+            });
+        });
     </script>
-    <!-- BootstrapのJavaScriptの読み込み -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
 </html>

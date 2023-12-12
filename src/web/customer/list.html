@@ -16,7 +16,7 @@
             <th scope="col">#</th>
             <th scope="col">Company Name</th>
             <th scope="col">Industry</th>
-            <th scope="col">Industry</th>
+            <th scope="col">Contact</th>
             <th scope="col">Location</th>
           </tr>
         </thead>
@@ -46,7 +46,7 @@
             const cell4 = row.insertCell(3); 
             const cell5 = row.insertCell(4); 
             cell1.textContent = index + 1;
-            cell2.textContent = customer.company_name;
+            cell2.innerHTML = `<a href="detail.html?customerId=${customer.customer_id}">${customer.company_name}</a>`;
             cell3.textContent = customer.industry;
             cell4.textContent = customer.contact;
             cell5.textContent = customer.location;
