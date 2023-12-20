@@ -10,10 +10,10 @@ app.use(cors());
 
 const { Pool } = require("pg");
 const pool = new Pool({
-  user: "user_3519", // PostgreSQLのユーザー名に置き換えてください
+  user: "user_3519",
   host: "db",
-  database: "crm_3519", // PostgreSQLのデータベース名に置き換えてください
-  password: "pass_3519", // PostgreSQLのパスワードに置き換えてください
+  database: "crm_3519",
+  password: "pass_3519",
   port: 5432,
 });
 
@@ -28,6 +28,22 @@ app.get("/customers", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.send("Error " + err);
+  }
+});
+
+app.get("/customers/:customerId", async (req, res) => {
+  try {
+    const customerId = req.params.customerId;
+    const customerData = await pool.query("SELECT * FROM customers WHERE customer_id = $1", [customerId]);
+
+    if (customerData.rows.length > 0) {
+      res.json({ success: true, customer: customerData.rows[0] });
+    } else {
+      res.json({ success: false, message: "Customer not found" });
+    }
+  } catch (err) {
+    console.error(err);
+    res.json({ success: false, message: "Error fetching customer data" });
   }
 });
 
@@ -51,6 +67,28 @@ app.delete("/delete-customer/:customerId", async (req, res) => {
     const customerId = req.params.customerId;
     const deleteCustomer = await pool.query("DELETE FROM customers WHERE customer_id = $1", [customerId]);
     res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.json({ success: false });
+  }
+});
+
+app.put("/update-customer/:customerId", async (req, res) => {
+  const customerId = req.params.customerId;
+  const updateData = req.body; // Use the entire request body as the update data
+
+  try {
+    const keys = Object.keys(updateData);
+    const values = Object.values(updateData);
+
+    const setClause = keys.map((key, index) => `${key} = $${index + 1}`).join(", ");
+
+    const updatedCustomer = await pool.query(
+      `UPDATE customers SET ${setClause} WHERE customer_id = $${keys.length + 1} RETURNING *`,
+      [...values, customerId]
+    );
+
+    res.json({ success: true, customer: updatedCustomer.rows[0] });
   } catch (err) {
     console.error(err);
     res.json({ success: false });

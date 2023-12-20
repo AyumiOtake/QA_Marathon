@@ -1,22 +1,89 @@
+<!-- update.html -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>案件情報入力</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Update Customer</title>
     <!-- Bootstrap CSSの読み込み -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
     <div class="container mt-5">
-        <!-- ここにHTMLを書く -->
+        <h2 class="mb-4">Update Customer</h2>
+        <form id="update-form">
+            <div class="form-group">
+                <label for="company_name">会社名</label>
+                <input type="text" class="form-control" id="company_name" name="company_name" required>
+            </div>
+            <div class="form-group">
+                <label for="industry">業界</label>
+                <input type="text" class="form-control" id="industry" name="industry" required>
+            </div>
+            <div class="form-group">
+                <label for="contact">連絡先</label>
+                <input type="text" class="form-control" id="contact" name="contact" required>
+            </div>
+            <div class="form-group">
+                <label for="location">所在地</label>
+                <input type="text" class="form-control" id="location" name="location" required>
+            </div>
+            <!-- 他のカラムに対応するテキストボックスを追加 -->
+
+            <button type="submit" class="btn btn-primary">更新</button>
+            <a href="list.html" class="btn btn-secondary">キャンセル</a>
+        </form>
     </div>
+
     <script type="module">
-        <!-- ここにJSを書く -->
+        // ExpressサーバのAPIエンドポイントのURL
+        import config from "./config.js";
+
+        // URLからcustomerIdを取得
+        const urlParams = new URLSearchParams(window.location.search);
+        const customerId = urlParams.get('customerId');
+
+        // 編集フォームの要素を取得
+        const updateForm = document.getElementById("update-form");
+
+        // フォームが送信されたときの処理
+        updateForm.addEventListener("submit", (event) => {
+            event.preventDefault();
+            // フォームの内容を取得して更新APIに送信
+            const formData = new FormData(updateForm);
+            const updateData = {};
+            formData.forEach((value, key) => {
+                updateData[key] = value;
+            });
+
+            // 更新APIエンドポイントにリクエストを送信
+            fetch(`${config.apiUrl}/update-customer/${customerId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updateData),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('更新が成功しました。');
+                    // 成功したら詳細ページにリダイレクト
+                    window.location.href = `detail.html?customerId=${customerId}`;
+                } else {
+                    alert('更新に失敗しました。');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('エラーが発生しました。');
+            });
+        });
     </script>
-    <!-- BootstrapのJavaScriptの読み込み -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <!-- BootstrapのJavaScriptと依存関係のリクエスト -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

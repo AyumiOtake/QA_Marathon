@@ -1,59 +1,71 @@
-<!-- customer-detail.html -->
+<!-- detail.html -->
 <!DOCTYPE html>
 <html lang="ja">
-  <head>
+<head>
     <meta charset="UTF-8" />
-  </head>
-  <body>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Customer Detail</title>
+    <!-- Bootstrap CSSの読み込み -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
     <div class="container mt-5">
-      <h2 class="mb-4">Customer Detail</h2>
-      <div id="customer-details"></div>
-      <button id="delete-button" class="btn btn-danger">削除</button>
+        <h2 class="mb-4">Customer Detail</h2>
+        <div id="customer-details"></div>
+        <button id="edit-button" class="btn btn-warning">編集</button>
+        <button id="delete-button" class="btn btn-danger">削除</button>
+        <a href="list.html" class="btn btn-primary">一覧に戻る</a>
     </div>
 
     <script type="module">
-      import config from "./config.js";
+        // ExpressサーバのAPIエンドポイントのURL
+        import config from "../config.js";
 
-      // URLからcustomerIdを取得
-      const urlParams = new URLSearchParams(window.location.search);
-      const customerId = urlParams.get('customerId');
+        // URLからcustomerIdを取得
+        const urlParams = new URLSearchParams(window.location.search);
+        const customerId = urlParams.get('customerId');
 
-      // 削除ボタンの要素を取得
-      const deleteButton = document.getElementById("delete-button");
+        // 編集ボタンの要素を取得
+        const editButton = document.getElementById("edit-button");
 
-      // 削除ボタンがクリックされたときの処理
-      deleteButton.addEventListener("click", () => confirmDelete(customerId));
+        // 編集ボタンがクリックされたときの処理
+        editButton.addEventListener("click", () => {
+            // 編集ページに遷移
+            window.location.href = `update.html?customerId=${customerId}`;
+        });
 
-      function confirmDelete(customerId) {
-        const confirmation = confirm("削除していいですか?");
-        if (confirmation) {
-          // 削除APIエンドポイントにリクエストを送信
-          fetch(`${config.apiUrl}/delete-customer/${customerId}`, {
-            method: 'DELETE',
-          })
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              alert('削除が成功しました。');
-              // 成功したらリストにリダイレクト
-              window.location.href = 'list.html';
-            } else {
-              alert('削除に失敗しました。');
-            }
-          })
-          .catch(error => {
-            console.error('Error:', error);
-            alert('エラーが発生しました。');
-          });
-        }
-      }
+        // 顧客詳細を表示する処理
+        const customerDetailsContainer = document.getElementById("customer-details");
 
-      // 顧客詳細を表示する処理は省略
+        fetch(`${config.apiUrl}/customers/${customerId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const customer = data.customer;
+                    // 顧客情報を表示
+                    customerDetailsContainer.innerHTML = `
+                        <p><strong>顧客ID:</strong> ${customer.customer_id}</p>
+                        <p><strong>会社名:</strong> ${customer.company_name}</p>
+                        <p><strong>業界:</strong> ${customer.industry}</p>
+                        <p><strong>連絡先:</strong> ${customer.contact}</p>
+                        <p><strong>所在地:</strong> ${customer.location}</p>
+                        <p><strong>作成日:</strong> ${new Date(customer.created_date).toLocaleString()}</p>
+                        <p><strong>更新日:</strong> ${new Date(customer.updated_date).toLocaleString()}</p>
+                    `;
+                } else {
+                    console.error('Error:', data.message);
+                    alert('顧客データの取得に失敗しました。');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('エラーが発生しました。');
+            });
     </script>
 
-    <!-- BootstrapのJavaScriptと依存関係のリク -->
+    <!-- BootstrapのJavaScriptと依存関係のリンク -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  </body>
+</body>
 </html>
