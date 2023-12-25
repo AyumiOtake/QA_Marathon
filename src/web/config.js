@@ -1,5 +1,5 @@
 const config = {
-  apiUrl: 'http://localhost:13519'
+  apiUrl: '/api_ayumi_otake'
 };
 
 export default config;
