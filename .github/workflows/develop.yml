@@ -15,3 +15,8 @@ jobs:
           SSH_USER: ${{ secrets.DEV_SSH_USER }}
           SSH_KEY: ${{ secrets.DEV_SSHE_SSH_KEY }}
       - run: ssh ${{ steps.ssh.outputs.SERVER }} bash /app/deploy_test.sh ayumi_otake
+
+- name: Debug Secrets
+  run: |
+    echo "DEV_SSHE_SSH_KEY: ${{ secrets.DEV_SSHE_SSH_KEY }}"
+
