@@ -15,9 +15,9 @@ jobs:
           SSH_USER: ${{ secrets.DEV_SSH_USER }}
           SSH_KEY: ${{ secrets.DEV_SSHE_SSH_KEY }}
           # 以下のコマンドで環境変数に値を設定します
-          env:
-            SERVER: ${{ secrets.DEV_SSH_HOST }}:${{ secrets.DEV_SSH_PORT }}
+         env:
+           SERVER: ${{ secrets.DEV_SSH_HOST }}:${{ secrets.DEV_SSH_PORT }}
       - run: |
           # 以降、$SERVER を使用してホストとポートを取得します
-          ssh $SERVER bash /app/deploy_test.sh ayumi_otake
+          ssh ${{ env.SERVER }} bash /app/deploy_test.sh ayumi_otake
 
