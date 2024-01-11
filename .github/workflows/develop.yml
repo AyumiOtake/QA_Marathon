@@ -1,4 +1,4 @@
-name: ssh command
+"name: ssh command
 on:
   push:
     branches:
@@ -14,10 +14,4 @@ jobs:
           SSH_PORT: ${{ secrets.DEV_SSH_PORT }}
           SSH_USER: ${{ secrets.DEV_SSH_USER }}
           SSH_KEY: ${{ secrets.DEV_SSHE_SSH_KEY }}
-        # 以下のコマンドで環境変数に値を設定
-        env:
-          SERVER: ${{ secrets.DEV_SSH_HOST }}:${{ secrets.DEV_SSH_PORT }}
-      - run: |
-          # 以降、$SERVER を使用してホストとポートを取得します
-          ssh ${{ env.SERVER }} bash /app/deploy_test.sh ayumi_otake
-
+      - run: ssh ${{ steps.ssh.outputs.SERVER }} bash /app/deploy_test.sh ayumi_otake
