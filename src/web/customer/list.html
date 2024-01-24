@@ -30,7 +30,7 @@
 
       fetch(`${config.apiUrl}/customers`)
         .then((response) => {
-          console.log(response); // ここでレスポンスオブジェクトをログに出力
+          console.log(response); // ここでレスポンスオブジェクトをログに出力するよ
           return response.json();
         })
         .then((data) => {
