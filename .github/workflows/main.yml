@@ -27,13 +27,6 @@ jobs:
           SSH_PORT: ${{ secrets.PRODUCTION_SSH_PORT }}
           SSH_USER: ${{ secrets.PRODUCTION_SSH_USER }}
           SSH_KEY: ${{ secrets.PRODUCTION_SSHE_SSH_KEY }}
-
-    - name: Deploy to Production
-      run: |
-        # Add commands to deploy to Production
-        # For example: scp or rsync commands, and then execute deployment script
-        # Example:
-        # scp -r /path/to/local/files ${{ steps.ssh_production.outputs.SERVER }}:/path/to/remote/directory
-        # ssh ${{ steps.ssh_production.outputs.SERVER }} bash /app/deploy.sh ayumi_otake
+      - run: ssh ${{ steps.ssh_production.outputs.SERVER }} bash /app/deploy.sh ayumi_otake
 
 
