@@ -1,35 +1,41 @@
-name: CI/CD
-
+name: ssh command
 on:
   push:
     branches:
       - main
-
 jobs:
-  test_and_deploy:
+  test_and_deploy_to_staging:
     runs-on: ubuntu-latest
+    steps:
+      - id: ssh
+        uses: invi5H/ssh-action@v1
+        with:
+          SSH_HOST: ${{ secrets.DEV_SSH_HOST }}
+          SSH_PORT: ${{ secrets.DEV_SSH_PORT }}
+          SSH_USER: ${{ secrets.DEV_SSH_USER }}
+          SSH_KEY: ${{ secrets.DEV_SSHE_SSH_KEY }}
+      - run: ssh ${{ steps.ssh.outputs.SERVER }} bash /app/deploy.sh ayumi_otake
+
+  deploy_to_production:
+    runs-on: ubuntu-latest
+    needs: test  # Assuming the previous job is named 'test'
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
-    - name: Set up SSH key for Staging
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.DEV_SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
-        chmod 600 ~/.ssh/id_ed25519
-
-    - name: Run Cypress tests #サイプレステスト実施
-      run: |
-        cd /ci/
-        npx cypress run --browser chrome --spec cypress/e2e/ayumi_otake.*
-
-    - name: Set up SSH key for Production
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.PRODUCTION_SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
-        chmod 600 ~/.ssh/id_ed25519
+      - name: SSH into Production Server
+        id: ssh_production
+        uses: invi5H/ssh-action@v1
+        with:
+          SSH_HOST: ${{ secrets.PRODUCTION_SSH_HOST }}
+          SSH_PORT: ${{ secrets.PRODUCTION_SSH_PORT }}
+          SSH_USER: ${{ secrets.PRODUCTION_SSH_USER }}
+          SSH_KEY: ${{ secrets.PRODUCTION_SSHE_SSH_KEY }}
 
     - name: Deploy to Production
       run: |
-        ssh -i ~/.ssh/id_ed25519 ${{ secrets.PRODUCTION_SSH_USER }}@${{ secrets.PRODUCTION_SSH_HOST }} "bash /app/deploy.sh ayumi_otake"
+        # Add commands to deploy to Production
+        # For example: scp or rsync commands, and then execute deployment script
+        # Example:
+        # scp -r /path/to/local/files ${{ steps.ssh_production.outputs.SERVER }}:/path/to/remote/directory
+        # ssh ${{ steps.ssh_production.outputs.SERVER }} bash /app/deploy.sh ayumi_otake
+
+
