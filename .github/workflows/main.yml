@@ -18,8 +18,6 @@ jobs:
 
   deploy_to_production:
     runs-on: ubuntu-latest
-    needs: test  # Assuming the previous job is named 'test'
-
     steps:
       - name: SSH into Production Server
         id: ssh_production
