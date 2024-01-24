@@ -3,10 +3,10 @@ name: CI/CD
 on:
   push:
     branches:
-      - develop
+      - main
 
 jobs:
-  deploy_staging:
+  test_and_deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -16,19 +16,13 @@ jobs:
     - name: Set up SSH key for Staging
       run: |
         mkdir -p ~/.ssh
-        echo "${{ secrets.DEV_SSHE_SSH_KEY }}" > ~/.ssh/id_ed25519
+        echo "${{ secrets.DEV_SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
         chmod 600 ~/.ssh/id_ed25519
 
-    - name: Deploy to Staging
+    - name: Run Cypress tests
       run: |
-        ssh -i ~/.ssh/id_ed25519 ${{ secrets.DEV_SSH_USER }}@${{ secrets.DEV_SSH_HOST }} "bash /app/deploy.sh ayumi_otake"
-
-  deploy_production:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+        cd /ci/
+        npx cypress run --browser chrome --spec cypress/e2e/ayumi_otake.*
 
     - name: Set up SSH key for Production
       run: |
@@ -39,3 +33,4 @@ jobs:
     - name: Deploy to Production
       run: |
         ssh -i ~/.ssh/id_ed25519 ${{ secrets.PRODUCTION_SSH_USER }}@${{ secrets.PRODUCTION_SSH_HOST }} "bash /app/deploy.sh ayumi_otake"
+        
