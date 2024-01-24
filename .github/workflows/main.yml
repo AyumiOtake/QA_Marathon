@@ -19,7 +19,7 @@ jobs:
         echo "${{ secrets.DEV_SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
         chmod 600 ~/.ssh/id_ed25519
 
-    - name: Run Cypress tests
+    - name: Run Cypress tests #サイプレステスト実施
       run: |
         cd /ci/
         npx cypress run --browser chrome --spec cypress/e2e/ayumi_otake.*
@@ -33,4 +33,3 @@ jobs:
     - name: Deploy to Production
       run: |
         ssh -i ~/.ssh/id_ed25519 ${{ secrets.PRODUCTION_SSH_USER }}@${{ secrets.PRODUCTION_SSH_HOST }} "bash /app/deploy.sh ayumi_otake"
-        
