@@ -16,18 +16,3 @@ jobs:
           SSH_KEY: ${{ secrets.DEV_SSHE_SSH_KEY }}
       - run: ssh ${{ steps.ssh.outputs.SERVER }} bash /app/deploy_test.sh ayumi_otake
 
-  push_to_main:
-    needs: test
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop'
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Push to main branch
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git checkout main
-          git merge --ff-only develop
-          git push origin main
