@@ -133,4 +133,9 @@ app.get("/cases/:caseId", async (req, res) => {
   }
 });
 
+// Static files for customer and case directories
+app.use('/customer', express.static('web/customer'));
+app.use('/case', express.static('web/case'));
+
+
 app.use(express.static("public"));
