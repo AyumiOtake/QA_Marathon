@@ -1,3 +1,4 @@
+<!-- customer/detail.html -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -14,7 +15,8 @@
         <button id="edit-button" class="btn btn-warning">編集</button>
         <button id="delete-button" class="btn btn-danger">削除</button>
         <a href="list.html" class="btn btn-primary">一覧に戻る</a>
-        <a href="add.html" class="btn btn-success">案件追加</a>
+        <!-- 追加: 案件追加ボタン -->
+        <button id="add-case-button" class="btn btn-success">案件追加</button>
     </div>
 
     <script type="module">
@@ -30,6 +32,9 @@
 
         // 削除ボタンの要素を取得
         const deleteButton = document.getElementById("delete-button");
+
+        // 案件追加ボタンの要素を取得
+        const addCaseButton = document.getElementById("add-case-button");
 
         // 編集ボタンがクリックされたときの処理
         editButton.addEventListener("click", () => {
@@ -59,6 +64,12 @@
                     alert('エラーが発生しました。');
                 });
             }
+        });
+
+        // 案件追加ボタンがクリックされたときの処理
+        addCaseButton.addEventListener("click", () => {
+            // 案件追加ページに遷移
+            window.location.href = `case/add.html?customerId=${customerId}`;
         });
 
         // 顧客詳細を表示する処理
@@ -93,6 +104,6 @@
     <!-- BootstrapのJavaScriptと依存関係のリンク -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
