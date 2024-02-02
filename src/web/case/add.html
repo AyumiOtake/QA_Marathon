@@ -1,3 +1,5 @@
+<!-- add-case.html -->
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -58,16 +60,19 @@
             const formData = new FormData(document.getElementById("add-case-form"));
 
             // データベースに案件を追加
-            fetch(`${config.apiUrl}/add-case`, {
+            fetch(config.apiUrl + '/add-case', {
                 method: 'POST',
-                body: formData
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(Object.fromEntries(formData)),
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     alert('案件が正常に追加されました。');
                     // 一覧ページに遷移
-                    window.location.href = 'case/list.html';
+                    window.location.href = 'list.html';
                 } else {
                     alert('案件の追加に失敗しました。');
                 }
