@@ -1,5 +1,3 @@
-<!-- add-case.html -->
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -38,9 +36,10 @@
                 <input type="text" class="form-control" id="representative" name="representative" required>
             </div>
 
-            <div class="form-group">
+            <!-- 顧客IDの非表示フィールド -->
+            <div class="form-group" style="display: none;">
                 <label for="customer_id">顧客ID:</label>
-                <input type="number" class="form-control" id="customer_id" name="customer_id" required>
+                <input type="number" class="form-control" id="customer_id" name="customer_id">
             </div>
 
             <button type="button" class="btn btn-primary" id="add-case-button">追加</button>
@@ -51,36 +50,26 @@
         // ExpressサーバのAPIエンドポイントのURL
         import config from "../config.js";
 
-        // 追加ボタンの要素を取得
-        const addCaseButton = document.getElementById("add-case-button");
+        // 顧客IDを取得
+        const urlParams = new URLSearchParams(window.location.search);
+        const customerId = urlParams.get('customerId');
 
-        // 追加ボタンがクリックされたときの処理
-        addCaseButton.addEventListener("click", () => {
+        // 顧客IDをフォームに自動的にセット
+        document.getElementById('customer_id').value = customerId;
+
+        // 送信ボタンの要素を取得
+        const addButton = document.getElementById("add-case-button");
+
+        // 送信ボタンがクリックされたときの処理
+        addButton.addEventListener("click", () => {
             // フォームデータを取得
             const formData = new FormData(document.getElementById("add-case-form"));
 
-            // データベースに案件を追加
-            fetch(config.apiUrl + '/add-case', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(Object.fromEntries(formData)),
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('案件が正常に追加されました。');
-                    // 一覧ページに遷移
-                    window.location.href = 'list.html';
-                } else {
-                    alert('案件の追加に失敗しました。');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('エラーが発生しました。');
-            });
+            // データをURLパラメータに変換
+            const params = new URLSearchParams(formData).toString();
+
+            // 確認ページに遷移
+            window.location.href = `add-confirm.html?${params}`;
         });
     </script>
 

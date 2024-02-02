@@ -1,22 +1,105 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>案件情報入力</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>案件情報確認</title>
     <!-- Bootstrap CSSの読み込み -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
     <div class="container mt-5">
-        <!-- ここにHTMLを書く -->
+        <h2 class="mb-4">案件情報確認</h2>
+        <form id="confirm-case-form">
+            <div class="form-group">
+                <label for="case_name">案件名:</label>
+                <input type="text" class="form-control" id="case_name" name="case_name" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="case_status">案件状態:</label>
+                <input type="text" class="form-control" id="case_status" name="case_status" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="expected_revenue">予想収益:</label>
+                <input type="text" class="form-control" id="expected_revenue" name="expected_revenue" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="representative">代表者名:</label>
+                <input type="text" class="form-control" id="representative" name="representative" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="customer_id">顧客ID:</label>
+                <input type="text" class="form-control" id="customer_id" name="customer_id" readonly>
+            </div>
+
+            <button type="button" class="btn btn-primary" id="edit-button">編集</button>
+            <button type="button" class="btn btn-success" id="register-button">登録</button>
+        </form>
     </div>
+
     <script type="module">
-        <!-- ここにJSを書く -->
+        // ExpressサーバのAPIエンドポイントのURL
+        import config from "../config.js";
+
+        // フォームデータを取得
+        const formData = new URLSearchParams(window.location.search);
+
+        // フォームにデータをセット
+        document.getElementById('case_name').value = formData.get('case_name');
+        document.getElementById('case_status').value = formData.get('case_status');
+        document.getElementById('expected_revenue').value = formData.get('expected_revenue');
+        document.getElementById('representative').value = formData.get('representative');
+        document.getElementById('customer_id').value = formData.get('customer_id');
+
+        // 編集ボタンの要素を取得
+        const editButton = document.getElementById("edit-button");
+
+        // 編集ボタンがクリックされたときの処理
+        editButton.addEventListener("click", () => {
+            // add.html に戻る
+            window.location.href = `add.html?customerId=${formData.get('customer_id')}`;
+        });
+
+        // 登録ボタンの要素を取得
+        const registerButton = document.getElementById("register-button");
+
+        // 登録ボタンがクリックされたときの処理
+        registerButton.addEventListener("click", () => {
+            // フォームデータを取得
+            const formData = new FormData(document.getElementById("add-case-form"));
+
+            // データをURLパラメータに変換
+            const params = new URLSearchParams(formData).toString();
+
+            // データベースに案件を追加
+            fetch(`${config.apiUrl}/add-case`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('案件が正常に追加されました。');
+                    // 一覧ページに遷移
+                    window.location.href = 'list.html';
+                } else {
+                    alert('案件の追加に失敗しました。');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('エラーが発生しました。');
+            });
+        });
     </script>
-    <!-- BootstrapのJavaScriptの読み込み -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <!-- BootstrapのJavaScriptと依存関係のリンク -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 </body>
 </html>
