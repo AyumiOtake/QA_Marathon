@@ -132,6 +132,25 @@ app.get("/cases", async (req, res) => {
   }
 });
 
+// 案件確認・登録
+app.post("/add-confirm-case", async (req, res) => {
+  try {
+    const { case_name, case_status, expected_revenue, representative, customer_id } = req.body;
+    console.log("Confirm Case request received:", req.body);
+
+    // データベースへの登録処理を行う
+    const newCase = await pool.query(
+      "INSERT INTO cases (case_name, case_status, expected_revenue, representative, customer_id) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+      [case_name, case_status, expected_revenue, representative, customer_id]
+    );
+
+    res.json({ success: true, case: newCase.rows[0] });
+  } catch (error) {
+    console.error("Error confirming and adding case:", error);
+    res.json({ success: false, error: "Failed to confirm and add case" });
+  }
+});
+
 // サーバー公開用の静的ファイル設定
 app.use('/customer', express.static('web/customer'));
 app.use('/case', express.static('web/case'));
