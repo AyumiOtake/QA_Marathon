@@ -115,6 +115,21 @@ app.post("/add-case", async (req, res) => {
   }
 });
 
+app.post("/add-confirm-case", async (req, res) => {
+  try {
+    const { case_name, case_status, expected_revenue, representative, customer_id } = req.body;
+    console.log("Confirm Case request received:", req.body);
+    const newCase = await pool.query(
+      "INSERT INTO cases (case_name, case_status, expected_revenue, representative, customer_id) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+      [case_name, case_status, expected_revenue, representative, customer_id]
+    );
+    res.json({ success: true, case: newCase.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.json({ success: false, message: "Error confirming and adding case" });
+  }
+});
+
 app.get("/cases/:caseId", async (req, res) => {
   try {
     const caseId = req.params.caseId;
