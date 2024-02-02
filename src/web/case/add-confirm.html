@@ -42,23 +42,20 @@
     </div>
 
     <script type="module">
+        // ExpressサーバのAPIエンドポイントのURL
         import config from "../config.js";
 
-        // フォームデータを sessionStorage から取得
+        // ページロード時にセッションストレージからフォームデータを取得
         const storedFormData = sessionStorage.getItem('formData');
-        if (!storedFormData) {
-            alert('不正なアクセスです。');
-            window.location.href = 'add.html';
-        }
+        const formData = storedFormData ? JSON.parse(storedFormData) : {};
 
         // フォームに値をセットするヘルパー関数
         const setFormValues = () => {
-            const formData = JSON.parse(storedFormData);
-            document.getElementById("case_name").value = formData.case_name;
-            document.getElementById("case_status").value = formData.case_status;
-            document.getElementById("expected_revenue").value = formData.expected_revenue;
-            document.getElementById("representative").value = formData.representative;
-            document.getElementById("customer_id").value = formData.customer_id;
+            document.getElementById("case_name").value = formData.case_name || "";
+            document.getElementById("case_status").value = formData.case_status || "";
+            document.getElementById("expected_revenue").value = formData.expected_revenue || "";
+            document.getElementById("representative").value = formData.representative || "";
+            document.getElementById("customer_id").value = formData.customer_id || "";
         };
 
         // 初期値をセット
@@ -70,7 +67,7 @@
         // 編集ボタンがクリックされたときの処理
         editCaseButton.addEventListener("click", () => {
             // 編集ページに遷移
-            window.location.href = 'add.html';
+            window.location.href = 'case/add.html';
         });
 
         // 登録ボタンの要素を取得
@@ -78,28 +75,32 @@
 
         // 登録ボタンがクリックされたときの処理
         registerCaseButton.addEventListener("click", () => {
-            // データベースに案件を追加
-            fetch(`${config.apiUrl}/add-confirm-case`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: storedFormData,
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('案件が正常に追加されました。');
-                    // 一覧ページに遷移
-                    window.location.href = 'list.html';
-                } else {
-                    alert('案件の追加に失敗しました。');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('エラーが発生しました。');
-            });
+            // フォームデータをサーバーサイドから取得
+            fetch(`${config.apiUrl}/get-form-data`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // サーバーサイドから取得したフォームデータをセット
+                        formData.case_name = data.formData.case_name;
+                        formData.case_status = data.formData.case_status;
+                        formData.expected_revenue = data.formData.expected_revenue;
+                        formData.representative = data.formData.representative;
+                        formData.customer_id = data.formData.customer_id;
+
+                        // セッションストレージに新しいフォームデータを保存
+                        sessionStorage.setItem('formData', JSON.stringify(formData));
+
+                        // 確認画面に遷移
+                        window.location.href = 'case/add-confirm.html';
+                    } else {
+                        console.error('Failed to get form data from server');
+                        alert('エラーが発生しました。');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('エラーが発生しました。');
+                });
         });
     </script>
 

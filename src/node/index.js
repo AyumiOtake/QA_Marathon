@@ -104,10 +104,28 @@ app.post("/add-confirm-case", async (req, res) => {
   try {
     const { case_name, case_status, expected_revenue, representative, customer_id } = req.body;
     console.log("Confirm Case request received:", req.body);
+
+    // セッションストレージからフォームデータを取得
+    const storedFormData = sessionStorage.getItem('formData');
+    const formData = storedFormData ? JSON.parse(storedFormData) : {};
+
+    // サーバーサイドからのフォームデータをマージ
+    const mergedData = {
+      case_name: formData.case_name || case_name,
+      case_status: formData.case_status || case_status,
+      expected_revenue: formData.expected_revenue || expected_revenue,
+      representative: formData.representative || representative,
+      customer_id: formData.customer_id || customer_id
+    };
+
     const newCase = await pool.query(
       "INSERT INTO cases (case_name, case_status, expected_revenue, representative, customer_id) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-      [case_name, case_status, expected_revenue, representative, customer_id]
+      [mergedData.case_name, mergedData.case_status, mergedData.expected_revenue, mergedData.representative, mergedData.customer_id]
     );
+
+    // フォームデータを削除
+    sessionStorage.removeItem('formData');
+
     res.json({ success: true, case: newCase.rows[0] });
   } catch (err) {
     console.error(err);
@@ -115,46 +133,7 @@ app.post("/add-confirm-case", async (req, res) => {
   }
 });
 
-app.post("/add-case", async (req, res) => {
-  try {
-    const { case_name, case_status, expected_revenue, representative, customer_id } = req.body;
-    console.log("Case request received:", req.body);
-    const newCase = await pool.query(
-      "INSERT INTO cases (case_name, case_status, expected_revenue, representative, customer_id) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-      [case_name, case_status, expected_revenue, representative, customer_id]
-    );
-    res.json({ success: true, case: newCase.rows[0] });
-  } catch (err) {
-    console.error(err);
-    res.json({ success: false, message: "Error adding case" });
-  }
-});
-
-app.get("/cases/:caseId", async (req, res) => {
-  try {
-    const caseId = req.params.caseId;
-    const caseData = await pool.query("SELECT * FROM cases WHERE case_id = $1", [caseId]);
-
-    if (caseData.rows.length > 0) {
-      res.json({ success: true, cases: caseData.rows[0] });
-    } else {
-      res.json({ success: false, message: "Case not found" });
-    }
-  } catch (err) {
-    console.error(err);
-    res.json({ success: false, message: "Error fetching case data" });
-  }
-});
-
-app.get("/cases", async (req, res) => {
-  try {
-    const caseData = await pool.query("SELECT case_id, case_name FROM cases");
-    res.json({ success: true, cases: caseData.rows });
-  } catch (err) {
-    console.error(err);
-    res.json({ success: false, message: "Error fetching case data" });
-  }
-});
+// ... (その他のエンドポイントや静的ファイルの設定)
 
 app.use('/customer', express.static('web/customer'));
 app.use('/case', express.static('web/case'));

@@ -3,37 +3,40 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>案件情報入力</title>
+    <title>案件追加</title>
     <!-- Bootstrap CSSの読み込み -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
     <div class="container mt-5">
-        <h2 class="mb-4">案件情報入力</h2>
+        <h2 class="mb-4">案件追加</h2>
         <form id="add-case-form">
+            <!-- 顧客IDをサーバーサイドで自動でセット -->
+            <input type="hidden" id="customer_id" name="customer_id">
+
             <div class="form-group">
                 <label for="case_name">案件名:</label>
-                <input type="text" class="form-control" id="case_name" name="case_name">
+                <input type="text" class="form-control" id="case_name" name="case_name" required>
             </div>
 
             <div class="form-group">
                 <label for="case_status">案件状態:</label>
-                <input type="text" class="form-control" id="case_status" name="case_status">
+                <select class="form-control" id="case_status" name="case_status" required>
+                    <option value="新規">新規</option>
+                    <option value="交渉中">交渉中</option>
+                    <option value="契約締結">契約締結</option>
+                    <option value="失注">失注</option>
+                </select>
             </div>
 
             <div class="form-group">
                 <label for="expected_revenue">予想収益:</label>
-                <input type="text" class="form-control" id="expected_revenue" name="expected_revenue">
+                <input type="number" class="form-control" id="expected_revenue" name="expected_revenue" min="0" step="0.01">
             </div>
 
             <div class="form-group">
                 <label for="representative">代表者名:</label>
-                <input type="text" class="form-control" id="representative" name="representative">
-            </div>
-
-            <div class="form-group">
-                <label for="customer_id">顧客ID:</label>
-                <input type="text" class="form-control" id="customer_id" name="customer_id">
+                <input type="text" class="form-control" id="representative" name="representative" required>
             </div>
 
             <button type="button" class="btn btn-primary" id="confirm-case-button">確認</button>
@@ -43,25 +46,36 @@
     <script type="module">
         import config from "../config.js";
 
-        const addCaseForm = document.getElementById("add-case-form");
-
-        // 確認ボタンがクリックされたときの処理
-        addCaseForm.addEventListener("submit", (event) => {
-            event.preventDefault();
-
-            // フォームデータを取得
-            const formData = new FormData(addCaseForm);
-
-            // データが入力されているか確認
-            if (formData.get("case_name") && formData.get("case_status") && formData.get("expected_revenue") && formData.get("representative") && formData.get("customer_id")) {
-                // フォームデータを JSON に変換して sessionStorage に保存
-                sessionStorage.setItem('formData', JSON.stringify(Object.fromEntries(formData.entries())));
-
-                // 確認画面に遷移
-                window.location.href = 'case/add-confirm.html';
-            } else {
-                alert("全ての項目を入力してください。");
+        // 顧客IDをサーバーサイドから取得してセットする関数
+        const setCustomerId = async () => {
+            try {
+                const response = await fetch(`${config.apiUrl}/get-current-customer-id`);
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById("customer_id").value = data.customer_id;
+                } else {
+                    console.error("Failed to get customer ID");
+                    alert("エラーが発生しました。");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("エラーが発生しました。");
             }
+        };
+
+        // ページロード時に顧客IDをセット
+        window.onload = setCustomerId;
+
+        // ボタンがクリックされたときの処理
+        document.getElementById("confirm-case-button").addEventListener("click", () => {
+            // フォームのデータを取得
+            const formData = new FormData(document.getElementById("add-case-form"));
+
+            // フォームデータをセッションストレージに保存
+            sessionStorage.setItem('formData', JSON.stringify(Object.fromEntries(formData)));
+
+            // 確認画面に遷移
+            window.location.href = 'case/add-confirm.html';
         });
     </script>
 
