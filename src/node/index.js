@@ -24,10 +24,10 @@ app.listen(port, () => {
 app.get("/customers", async (req, res) => {
   try {
     const customerData = await pool.query("SELECT * FROM customers");
-    res.send(customerData.rows);
+    res.json({ success: true, data: customerData.rows });
   } catch (err) {
     console.error(err);
-    res.send("Error " + err);
+    res.json({ success: false, message: "Error fetching customer data" });
   }
 });
 
@@ -58,7 +58,7 @@ app.post("/add-customer", async (req, res) => {
     res.json({ success: true, customer: newCustomer.rows[0] });
   } catch (err) {
     console.error(err);
-    res.json({ success: false });
+    res.json({ success: false, message: "Error adding customer" });
   }
 });
 
@@ -74,13 +74,13 @@ app.delete("/delete-customer/:customerId", async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    res.json({ success: false });
+    res.json({ success: false, message: "Error deleting customer" });
   }
 });
 
 app.put("/update-customer/:customerId", async (req, res) => {
   const customerId = req.params.customerId;
-  const updateData = req.body; // Use the entire request body as the update data
+  const updateData = req.body;
 
   try {
     const keys = Object.keys(updateData);
@@ -96,11 +96,10 @@ app.put("/update-customer/:customerId", async (req, res) => {
     res.json({ success: true, customer: updatedCustomer.rows[0] });
   } catch (err) {
     console.error(err);
-    res.json({ success: false });
+    res.json({ success: false, message: "Error updating customer" });
   }
 });
 
-// 案件追加
 app.post("/add-case", async (req, res) => {
   try {
     const { case_name, case_status, expected_revenue, representative, customer_id } = req.body;
@@ -112,11 +111,10 @@ app.post("/add-case", async (req, res) => {
     res.json({ success: true, case: newCase.rows[0] });
   } catch (err) {
     console.error(err);
-    res.json({ success: false });
+    res.json({ success: false, message: "Error adding case" });
   }
 });
 
-// 案件取得
 app.get("/cases/:caseId", async (req, res) => {
   try {
     const caseId = req.params.caseId;
@@ -133,7 +131,6 @@ app.get("/cases/:caseId", async (req, res) => {
   }
 });
 
-// 案件一覧取得
 app.get("/cases", async (req, res) => {
   try {
     const caseData = await pool.query("SELECT case_id, case_name FROM cases");
@@ -144,7 +141,6 @@ app.get("/cases", async (req, res) => {
   }
 });
 
-// Static files for customer and case directories
 app.use('/customer', express.static('web/customer'));
 app.use('/case', express.static('web/case'));
 
