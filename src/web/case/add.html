@@ -12,6 +12,7 @@
         <h2 class="mb-4">案件追加</h2>
         <form id="add-case-form">
             <!-- 顧客IDはサーバーサイドで自動でセット -->
+            <input type="hidden" id="customer_id" name="customer_id">
 
             <div class="form-group">
                 <label for="case_name">案件名:</label>
@@ -51,8 +52,7 @@
                 const response = await fetch(`${config.apiUrl}/get-current-customer-id`);
                 const data = await response.json();
                 if (data.success) {
-                    // ここをコメントアウトしました
-                    // document.getElementById("customer_id").value = data.customer_id;
+                    document.getElementById("customer_id").value = data.customer_id;
                 } else {
                     console.error("Failed to get customer ID");
                     alert("エラーが発生しました。");
