@@ -122,7 +122,7 @@ app.post("/add-case", async (req, res) => {
 });
 
 // 案件一覧取得
-app.get("/cases", async (req, res) => {
+app.get("/list-cases", async (req, res) => {
   try {
     const caseData = await pool.query("SELECT * FROM cases");
     res.json({ success: true, data: caseData.rows });
