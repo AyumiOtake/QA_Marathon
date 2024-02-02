@@ -67,7 +67,7 @@
         // 編集ボタンがクリックされたときの処理
         editCaseButton.addEventListener("click", () => {
             // 編集ページに遷移
-            window.location.href = 'case/add.html';
+            window.location.href = 'add.html';
         });
 
         // 登録ボタンの要素を取得
@@ -75,32 +75,28 @@
 
         // 登録ボタンがクリックされたときの処理
         registerCaseButton.addEventListener("click", () => {
-            // フォームデータをサーバーサイドから取得
-            fetch(`${config.apiUrl}/get-form-data`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // サーバーサイドから取得したフォームデータをセット
-                        formData.case_name = data.formData.case_name;
-                        formData.case_status = data.formData.case_status;
-                        formData.expected_revenue = data.formData.expected_revenue;
-                        formData.representative = data.formData.representative;
-                        formData.customer_id = data.formData.customer_id;
-
-                        // セッションストレージに新しいフォームデータを保存
-                        sessionStorage.setItem('formData', JSON.stringify(formData));
-
-                        // 確認画面に遷移
-                        window.location.href = 'case/add-confirm.html';
-                    } else {
-                        console.error('Failed to get form data from server');
-                        alert('エラーが発生しました。');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
+            // フォームデータをサーバーサイドに送信してDBに登録
+            fetch(`${config.apiUrl}/add-confirm-case`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // 登録が成功したらリストページに遷移
+                    window.location.href = 'list.html';
+                } else {
+                    console.error('Failed to register case');
                     alert('エラーが発生しました。');
-                });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('エラーが発生しました。');
+            });
         });
     </script>
 
