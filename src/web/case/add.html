@@ -1,23 +1,22 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>案件追加</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>案件情報入力</title>
     <!-- Bootstrap CSSの読み込み -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
     <div class="container mt-5">
-        <h2 class="mb-4">案件追加</h2>
-        <form id="add-case-form">
+        <h2 class="mb-4">案件情報を入力してください</h2>
+        <form id="case-form">
             <div class="form-group">
                 <label for="case_name">案件名:</label>
                 <input type="text" class="form-control" id="case_name" name="case_name" required>
             </div>
-
             <div class="form-group">
-                <label for="case_status">案件状態:</label>
+                <label for="case_status">案件状況:</label>
                 <select class="form-control" id="case_status" name="case_status" required>
                     <option value="新規">新規</option>
                     <option value="交渉中">交渉中</option>
@@ -25,40 +24,41 @@
                     <option value="失注">失注</option>
                 </select>
             </div>
-
             <div class="form-group">
                 <label for="expected_revenue">予想収益:</label>
                 <input type="number" class="form-control" id="expected_revenue" name="expected_revenue" min="0" step="0.01">
             </div>
-
             <div class="form-group">
                 <label for="representative">代表者名:</label>
                 <input type="text" class="form-control" id="representative" name="representative" required>
             </div>
-
-            <button type="button" class="btn btn-primary" id="confirm-case-button">確認</button>
+            <div class="form-group">
+                <label for="customer_id">顧客ID:</label>
+                <input type="number" class="form-control" id="customer_id" name="customer_id" required>
+            </div>
+            <button type="button" class="btn btn-primary" id="submitButton">送信</button>
         </form>
     </div>
-
     <script type="module">
-        import config from "../config.js";
+        import config from '../config.js';
 
-        // ボタンがクリックされたときの処理
-        document.getElementById("confirm-case-button").addEventListener("click", () => {
-            // フォームのデータを取得
-            const formData = new FormData(document.getElementById("add-case-form"));
+        document.getElementById('submitButton').addEventListener('click', function() {
+            const formData = new FormData(document.getElementById('case-form'));
+            const jsonData = {};
+            formData.forEach((value, key) => {
+                jsonData[key] = value;
+            });
 
-            // フォームデータをセッションストレージに保存
-            sessionStorage.setItem('formData', JSON.stringify(Object.fromEntries(formData)));
+            // フォームデータを sessionStorage に保存
+            sessionStorage.setItem('formData', JSON.stringify(jsonData));
 
-            // 確認画面に遷移
-            window.location.href = 'add-confirm.html';
+            // リダイレクト
+            window.location.href = 'add-confirm-case.html';
         });
     </script>
-
-    <!-- BootstrapのJavaScriptと依存関係のリンク -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <!-- BootstrapのJavaScriptの読み込み -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
 </html>

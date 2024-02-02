@@ -1,82 +1,44 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>案件情報確認</title>
-    <!-- Bootstrap CSSの読み込み -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <meta charset="UTF-8">
 </head>
 <body>
     <div class="container mt-5">
-        <h2 class="mb-4">案件情報確認</h2>
-        <form id="confirm-case-form">
-            <div class="form-group">
-                <label for="case_name">案件名:</label>
-                <input type="text" class="form-control" id="case_name" name="case_name" readonly>
-            </div>
-
-            <div class="form-group">
-                <label for="case_status">案件状態:</label>
-                <input type="text" class="form-control" id="case_status" name="case_status" readonly>
-            </div>
-
-            <div class="form-group">
-                <label for="expected_revenue">予想収益:</label>
-                <input type="text" class="form-control" id="expected_revenue" name="expected_revenue" readonly>
-            </div>
-
-            <div class="form-group">
-                <label for="representative">代表者名:</label>
-                <input type="text" class="form-control" id="representative" name="representative" readonly>
-            </div>
-
-            <div class="form-group">
-                <label for="customer_id">顧客ID:</label>
-                <input type="text" class="form-control" id="customer_id" name="customer_id" readonly>
-            </div>
-
-            <button type="button" class="btn btn-primary" id="edit-case-button">編集</button>
-            <button type="button" class="btn btn-success" id="register-case-button">登録</button>
-        </form>
+        <h2 class="mb-4">案件情報を確認してください</h2>
+        <div id="confirmation-details"></div>
+        <button type="button" class="btn btn-primary" id="editButton">編集</button>
+        <button type="button" class="btn btn-primary" id="submitButton">送信</button>
     </div>
-
     <script type="module">
-        // ExpressサーバのAPIエンドポイントのURL
-        import config from "../config.js";
+        import config from '../config.js';
 
-        // ページロード時にセッションストレージからフォームデータを取得
-        const storedFormData = sessionStorage.getItem('formData');
-        const formData = storedFormData ? JSON.parse(storedFormData) : {};
+        window.addEventListener('load', displayConfirmation);
 
-        // フォームに値をセットするヘルパー関数
-        const setFormValues = () => {
-            document.getElementById("case_name").value = formData.case_name || "";
-            document.getElementById("case_status").value = formData.case_status || "";
-            document.getElementById("expected_revenue").value = formData.expected_revenue || "";
-            document.getElementById("representative").value = formData.representative || "";
-            document.getElementById("customer_id").value = formData.customer_id || "";
-        };
+        function displayConfirmation() {
+            const formDataString = sessionStorage.getItem('formData');
+            if (formDataString) {
+                const formData = JSON.parse(formDataString);
+                const confirmationDetails = document.getElementById('confirmation-details');
 
-        // 初期値をセット
-        setFormValues();
+                for (const [key, value] of Object.entries(formData)) {
+                    const confirmationItem = document.createElement('div');
+                    confirmationItem.textContent = `${key}: ${value}`;
+                    confirmationDetails.appendChild(confirmationItem);
+                }
+            }
+        }
 
-        // 編集ボタンの要素を取得
-        const editCaseButton = document.getElementById("edit-case-button");
-
-        // 編集ボタンがクリックされたときの処理
-        editCaseButton.addEventListener("click", () => {
-            // 編集ページに遷移
+        document.getElementById('editButton').addEventListener('click', function() {
             window.location.href = 'add.html';
         });
 
-        // 登録ボタンの要素を取得
-        const registerCaseButton = document.getElementById("register-case-button");
-
-        // 登録ボタンがクリックされたときの処理
-        registerCaseButton.addEventListener("click", () => {
-            // フォームデータをサーバーサイドに送信してDBに登録
-            fetch(`${config.apiUrl}/add-confirm-case`, {
+        document.getElementById('submitButton').addEventListener('click', function() {
+            const formDataString = sessionStorage.getItem('formData');
+            const formData = JSON.parse(formDataString);
+            
+            // データベースにデータを送信
+            fetch(config.apiUrl + '/add-confirm-case', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -86,11 +48,11 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // 登録が成功したらリストページに遷移
+                    alert('案件情報が正常に登録されました。');
+                    // 登録成功時にlist.htmlに遷移
                     window.location.href = 'list.html';
                 } else {
-                    console.error('Failed to register case');
-                    alert('エラーが発生しました。');
+                    alert('案件情報の登録に失敗しました。');
                 }
             })
             .catch(error => {
@@ -99,10 +61,5 @@
             });
         });
     </script>
-
-    <!-- BootstrapのJavaScriptと依存関係のリンク -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 </body>
 </html>
