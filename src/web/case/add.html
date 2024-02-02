@@ -9,67 +9,59 @@
 </head>
 <body>
     <div class="container mt-5">
-        <h2 class="mb-4">案件情報</h2>
+        <h2 class="mb-4">案件情報入力</h2>
         <form id="add-case-form">
             <div class="form-group">
                 <label for="case_name">案件名:</label>
-                <input type="text" class="form-control" id="case_name" name="case_name" required>
+                <input type="text" class="form-control" id="case_name" name="case_name">
             </div>
 
             <div class="form-group">
                 <label for="case_status">案件状態:</label>
-                <select class="form-control" id="case_status" name="case_status" required>
-                    <option value="新規">新規</option>
-                    <option value="交渉中">交渉中</option>
-                    <option value="契約締結">契約締結</option>
-                    <option value="失注">失注</option>
-                </select>
+                <input type="text" class="form-control" id="case_status" name="case_status">
             </div>
 
             <div class="form-group">
                 <label for="expected_revenue">予想収益:</label>
-                <input type="number" class="form-control" id="expected_revenue" name="expected_revenue" step="0.01" min="0">
+                <input type="text" class="form-control" id="expected_revenue" name="expected_revenue">
             </div>
 
             <div class="form-group">
                 <label for="representative">代表者名:</label>
-                <input type="text" class="form-control" id="representative" name="representative" required>
+                <input type="text" class="form-control" id="representative" name="representative">
             </div>
 
-            <!-- 顧客IDの非表示フィールド -->
-            <div class="form-group" style="display: none;">
+            <div class="form-group">
                 <label for="customer_id">顧客ID:</label>
-                <input type="number" class="form-control" id="customer_id" name="customer_id">
+                <input type="text" class="form-control" id="customer_id" name="customer_id">
             </div>
 
-            <button type="button" class="btn btn-primary" id="add-case-button">追加</button>
+            <button type="button" class="btn btn-primary" id="confirm-case-button">確認</button>
         </form>
     </div>
 
     <script type="module">
-        // ExpressサーバのAPIエンドポイントのURL
         import config from "../config.js";
 
-        // 顧客IDを取得
-        const urlParams = new URLSearchParams(window.location.search);
-        const customerId = urlParams.get('customerId');
+        const addCaseForm = document.getElementById("add-case-form");
 
-        // 顧客IDをフォームに自動的にセット
-        document.getElementById('customer_id').value = customerId;
+        // 確認ボタンがクリックされたときの処理
+        addCaseForm.addEventListener("submit", (event) => {
+            event.preventDefault();
 
-        // 送信ボタンの要素を取得
-        const addButton = document.getElementById("add-case-button");
-
-        // 送信ボタンがクリックされたときの処理
-        addButton.addEventListener("click", () => {
             // フォームデータを取得
-            const formData = new FormData(document.getElementById("add-case-form"));
+            const formData = new FormData(addCaseForm);
 
-            // データをURLパラメータに変換
-            const params = new URLSearchParams(formData).toString();
+            // データが入力されているか確認
+            if (formData.get("case_name") && formData.get("case_status") && formData.get("expected_revenue") && formData.get("representative") && formData.get("customer_id")) {
+                // フォームデータを JSON に変換して sessionStorage に保存
+                sessionStorage.setItem('formData', JSON.stringify(Object.fromEntries(formData.entries())));
 
-            // 確認ページに遷移
-            window.location.href = `add-confirm.html?${params}`;
+                // 確認画面に遷移
+                window.location.href = 'case/add-confirm.html';
+            } else {
+                alert("全ての項目を入力してください。");
+            }
         });
     </script>
 

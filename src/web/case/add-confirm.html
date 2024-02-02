@@ -42,19 +42,23 @@
     </div>
 
     <script type="module">
-        // ExpressサーバのAPIエンドポイントのURL
         import config from "../config.js";
 
-        // URLパラメータからクエリ文字列を取得
-        const queryParams = new URLSearchParams(window.location.search);
+        // フォームデータを sessionStorage から取得
+        const storedFormData = sessionStorage.getItem('formData');
+        if (!storedFormData) {
+            alert('不正なアクセスです。');
+            window.location.href = 'add.html';
+        }
 
         // フォームに値をセットするヘルパー関数
         const setFormValues = () => {
-            document.getElementById("case_name").value = queryParams.get("case_name");
-            document.getElementById("case_status").value = queryParams.get("case_status");
-            document.getElementById("expected_revenue").value = queryParams.get("expected_revenue");
-            document.getElementById("representative").value = queryParams.get("representative");
-            document.getElementById("customer_id").value = queryParams.get("customer_id");
+            const formData = JSON.parse(storedFormData);
+            document.getElementById("case_name").value = formData.case_name;
+            document.getElementById("case_status").value = formData.case_status;
+            document.getElementById("expected_revenue").value = formData.expected_revenue;
+            document.getElementById("representative").value = formData.representative;
+            document.getElementById("customer_id").value = formData.customer_id;
         };
 
         // 初期値をセット
@@ -66,7 +70,7 @@
         // 編集ボタンがクリックされたときの処理
         editCaseButton.addEventListener("click", () => {
             // 編集ページに遷移
-            window.location.href = `case/add.html?${queryParams.toString()}`;
+            window.location.href = 'add.html';
         });
 
         // 登録ボタンの要素を取得
@@ -75,19 +79,19 @@
         // 登録ボタンがクリックされたときの処理
         registerCaseButton.addEventListener("click", () => {
             // データベースに案件を追加
-            fetch(`${config.apiUrl}/add-case`, {
+            fetch(`${config.apiUrl}/add-confirm-case`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(Object.fromEntries(queryParams)),
+                body: storedFormData,
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     alert('案件が正常に追加されました。');
                     // 一覧ページに遷移
-                    window.location.href = 'case/list.html';
+                    window.location.href = 'list.html';
                 } else {
                     alert('案件の追加に失敗しました。');
                 }
