@@ -66,11 +66,16 @@
             }
         });
 
-        // 案件追加ボタンがクリックされたときの処理
+       // 追加ボタンがクリックされたときの処理
         addCaseButton.addEventListener("click", () => {
-            // 案件追加ページに遷移
-            window.location.href = `case/add.html?customerId=${customerId}`;
-        });
+       // 現在のURLからcustomerIdを取得
+        const urlParams = new URLSearchParams(window.location.search);
+        const customerId = urlParams.get('customerId');
+  
+       // 案件追加画面に遷移
+       window.location.href = `../case/add.html?customerId=${customerId}`;
+      });
+
 
         // 顧客詳細を表示する処理
         const customerDetailsContainer = document.getElementById("customer-details");
