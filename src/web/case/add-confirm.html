@@ -45,16 +45,16 @@
         // ExpressサーバのAPIエンドポイントのURL
         import config from "../config.js";
 
-        // フォームデータを取得
-        const formData = new FormData(window.location.href.split("?")[1]);
+        // URLパラメータからクエリ文字列を取得
+        const queryParams = new URLSearchParams(window.location.search);
 
         // フォームに値をセットするヘルパー関数
         const setFormValues = () => {
-            document.getElementById("case_name").value = formData.get("case_name");
-            document.getElementById("case_status").value = formData.get("case_status");
-            document.getElementById("expected_revenue").value = formData.get("expected_revenue");
-            document.getElementById("representative").value = formData.get("representative");
-            document.getElementById("customer_id").value = formData.get("customer_id");
+            document.getElementById("case_name").value = queryParams.get("case_name");
+            document.getElementById("case_status").value = queryParams.get("case_status");
+            document.getElementById("expected_revenue").value = queryParams.get("expected_revenue");
+            document.getElementById("representative").value = queryParams.get("representative");
+            document.getElementById("customer_id").value = queryParams.get("customer_id");
         };
 
         // 初期値をセット
@@ -66,7 +66,7 @@
         // 編集ボタンがクリックされたときの処理
         editCaseButton.addEventListener("click", () => {
             // 編集ページに遷移
-            window.location.href = 'case/add.html?' + Array.from(formData.entries()).map(e => e.join('=')).join('&');
+            window.location.href = `case/add.html?${queryParams.toString()}`;
         });
 
         // 登録ボタンの要素を取得
@@ -75,12 +75,12 @@
         // 登録ボタンがクリックされたときの処理
         registerCaseButton.addEventListener("click", () => {
             // データベースに案件を追加
-            fetch(`${config.apiUrl}/add-confirm-case`, {
+            fetch(`${config.apiUrl}/add-case`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(Object.fromEntries(formData)),
+                body: JSON.stringify(Object.fromEntries(queryParams)),
             })
             .then(response => response.json())
             .then(data => {
