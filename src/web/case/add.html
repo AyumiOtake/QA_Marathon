@@ -11,9 +11,6 @@
     <div class="container mt-5">
         <h2 class="mb-4">案件追加</h2>
         <form id="add-case-form">
-            <!-- 顧客IDはサーバーサイドで自動でセット -->
-            <input type="hidden" id="customer_id" name="customer_id">
-
             <div class="form-group">
                 <label for="case_name">案件名:</label>
                 <input type="text" class="form-control" id="case_name" name="case_name" required>
@@ -45,26 +42,6 @@
 
     <script type="module">
         import config from "../config.js";
-
-        // 顧客IDをサーバーサイドから取得してセットする関数
-        const setCustomerId = async () => {
-            try {
-                const response = await fetch(`${config.apiUrl}/get-current-customer-id`);
-                const data = await response.json();
-                if (data.success) {
-                    document.getElementById("customer_id").value = data.customer_id;
-                } else {
-                    console.error("Failed to get customer ID");
-                    alert("エラーが発生しました。");
-                }
-            } catch (error) {
-                console.error("Error:", error);
-                alert("エラーが発生しました。");
-            }
-        };
-
-        // ページロード時に顧客IDをセット
-        window.onload = setCustomerId;
 
         // ボタンがクリックされたときの処理
         document.getElementById("confirm-case-button").addEventListener("click", () => {
