@@ -65,8 +65,13 @@ app.post("/add-customer", async (req, res) => {
 app.delete("/delete-customer/:customerId", async (req, res) => {
   try {
     const customerId = req.params.customerId;
-    const deleteCustomer = await pool.query("DELETE FROM customers WHERE customer_id = $1", [customerId]);
-    res.json({ success: true });
+    const deleteCustomer = await pool.query("DELETE FROM customers WHERE customer_id = $1 RETURNING *", [customerId]);
+
+    if (deleteCustomer.rows.length > 0) {
+      res.json({ success: true });
+    } else {
+      res.json({ success: false, message: "Customer not found" });
+    }
   } catch (err) {
     console.error(err);
     res.json({ success: false });
