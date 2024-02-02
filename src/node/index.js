@@ -100,4 +100,37 @@ app.put("/update-customer/:customerId", async (req, res) => {
   }
 });
 
+// 案件追加
+app.post("/add-case", async (req, res) => {
+  try {
+    const { case_name, case_status, expected_revenue, representative, customer_id } = req.body;
+    console.log("Case request received:", req.body);
+    const newCase = await pool.query(
+      "INSERT INTO cases (case_name, case_status, expected_revenue, representative, customer_id) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+      [case_name, case_status, expected_revenue, representative, customer_id]
+    );
+    res.json({ success: true, case: newCase.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.json({ success: false });
+  }
+});
+
+// 案件取得
+app.get("/cases/:caseId", async (req, res) => {
+  try {
+    const caseId = req.params.caseId;
+    const caseData = await pool.query("SELECT * FROM cases WHERE case_id = $1", [caseId]);
+
+    if (caseData.rows.length > 0) {
+      res.json({ success: true, cases: caseData.rows[0] });
+    } else {
+      res.json({ success: false, message: "Case not found" });
+    }
+  } catch (err) {
+    console.error(err);
+    res.json({ success: false, message: "Error fetching case data" });
+  }
+});
+
 app.use(express.static("public"));

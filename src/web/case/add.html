@@ -1,22 +1,87 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>案件情報入力</title>
     <!-- Bootstrap CSSの読み込み -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
     <div class="container mt-5">
-        <!-- ここにHTMLを書く -->
+        <h2 class="mb-4">案件情報</h2>
+        <form id="add-case-form">
+            <div class="form-group">
+                <label for="case_name">案件名:</label>
+                <input type="text" class="form-control" id="case_name" name="case_name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="case_status">案件状態:</label>
+                <select class="form-control" id="case_status" name="case_status" required>
+                    <option value="新規">新規</option>
+                    <option value="交渉中">交渉中</option>
+                    <option value="契約締結">契約締結</option>
+                    <option value="失注">失注</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="expected_revenue">予想収益:</label>
+                <input type="number" class="form-control" id="expected_revenue" name="expected_revenue" step="0.01" min="0">
+            </div>
+
+            <div class="form-group">
+                <label for="representative">代表者名:</label>
+                <input type="text" class="form-control" id="representative" name="representative" required>
+            </div>
+
+            <div class="form-group">
+                <label for="customer_id">顧客ID:</label>
+                <input type="number" class="form-control" id="customer_id" name="customer_id" required>
+            </div>
+
+            <button type="button" class="btn btn-primary" id="add-case-button">追加</button>
+        </form>
     </div>
+
     <script type="module">
-        <!-- ここにJSを書く -->
+        // ExpressサーバのAPIエンドポイントのURL
+        import config from "../config.js";
+
+        // 追加ボタンの要素を取得
+        const addCaseButton = document.getElementById("add-case-button");
+
+        // 追加ボタンがクリックされたときの処理
+        addCaseButton.addEventListener("click", () => {
+            // フォームデータを取得
+            const formData = new FormData(document.getElementById("add-case-form"));
+
+            // データベースに案件を追加
+            fetch(`${config.apiUrl}/add-case`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('案件が正常に追加されました。');
+                    // 一覧ページに遷移
+                    window.location.href = 'list.html';
+                } else {
+                    alert('案件の追加に失敗しました。');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('エラーが発生しました。');
+            });
+        });
     </script>
-    <!-- BootstrapのJavaScriptの読み込み -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <!-- BootstrapのJavaScriptと依存関係のリンク -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 </body>
 </html>
