@@ -1,22 +1,63 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>案件情報入力</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>案件一覧</title>
     <!-- Bootstrap CSSの読み込み -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
     <div class="container mt-5">
-        <!-- ここにHTMLを書く -->
+        <h2 class="mb-4">案件一覧</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>案件ID</th>
+                    <th>案件名</th>
+                </tr>
+            </thead>
+            <tbody id="case-list"></tbody>
+        </table>
+        <a href="add.html" class="btn btn-success">案件追加</a>
+        <a href="../customer/list.html" class="btn btn-primary">顧客一覧に戻る</a>
     </div>
+
     <script type="module">
-        <!-- ここにJSを書く -->
+        // ExpressサーバのAPIエンドポイントのURL
+        import config from "../config.js";
+
+        // 案件一覧を表示する処理
+        const caseListContainer = document.getElementById("case-list");
+
+        fetch(`${config.apiUrl}/cases`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const cases = data.cases;
+                    // 案件一覧を表示
+                    cases.forEach(caseItem => {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td>${caseItem.case_id}</td>
+                            <td>${caseItem.case_name}</td>
+                        `;
+                        caseListContainer.appendChild(row);
+                    });
+                } else {
+                    console.error('Error:', data.message);
+                    alert('案件データの取得に失敗しました。');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('エラーが発生しました。');
+            });
     </script>
-    <!-- BootstrapのJavaScriptの読み込み -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <!-- BootstrapのJavaScriptと依存関係のリンク -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

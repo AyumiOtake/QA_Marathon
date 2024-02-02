@@ -133,9 +133,19 @@ app.get("/cases/:caseId", async (req, res) => {
   }
 });
 
+// 案件一覧取得
+app.get("/cases", async (req, res) => {
+  try {
+    const caseData = await pool.query("SELECT case_id, case_name FROM cases");
+    res.json({ success: true, cases: caseData.rows });
+  } catch (err) {
+    console.error(err);
+    res.json({ success: false, message: "Error fetching case data" });
+  }
+});
+
 // Static files for customer and case directories
 app.use('/customer', express.static('web/customer'));
 app.use('/case', express.static('web/case'));
-
 
 app.use(express.static("public"));
