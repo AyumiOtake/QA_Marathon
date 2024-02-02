@@ -14,12 +14,14 @@ jobs:
           SSH_PORT: ${{ secrets.DEV_SSH_PORT }}
           SSH_USER: ${{ secrets.DEV_SSH_USER }}
           SSH_KEY: ${{ secrets.DEV_SSHE_SSH_KEY }}
-      - run: ssh ${{ steps.ssh.outputs.SERVER }} bash /app/deploy.sh ayumi_otake
+      - name: Run Cypress tests and deploy to staging
+        run: |
+          ssh ${{ steps.ssh.outputs.SERVER }} bash /app/deploy.sh ayumi_otake
 
   deploy_to_production:
     runs-on: ubuntu-latest
-    needs: test  # Assuming the previous job is named 'test'
-
+    needs: test_and_deploy_to_staging
+    if: ${{ needs.test_and_deploy_to_staging.result == 'success' }}
     steps:
       - name: SSH into Production Server
         id: ssh_production
@@ -28,14 +30,5 @@ jobs:
           SSH_HOST: ${{ secrets.PRODUCTION_SSH_HOST }}
           SSH_PORT: ${{ secrets.PRODUCTION_SSH_PORT }}
           SSH_USER: ${{ secrets.PRODUCTION_SSH_USER }}
-          SSH_KEY: ${{ secrets.PRODUCTION_SSHE_SSH_KEY }}
-
-    - name: Deploy to Production
-      run: |
-        # Add commands to deploy to Production
-        # For example: scp or rsync commands, and then execute deployment script
-        # Example:
-        # scp -r /path/to/local/files ${{ steps.ssh_production.outputs.SERVER }}:/path/to/remote/directory
-        # ssh ${{ steps.ssh_production.outputs.SERVER }} bash /app/deploy.sh ayumi_otake
-
-
+          SSH_KEY: ${{ secrets.PRODUCTION_SSH_PRIVATE_KEY }}
+      - run: ssh ${{ steps.ssh_production.outputs.SERVER }} bash /app/deploy.sh ayumi_otake
