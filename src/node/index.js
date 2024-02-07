@@ -95,4 +95,23 @@ app.put("/update-customer/:customerId", async (req, res) => {
   }
 });
 
-app.use(express.static("public"));
+// 案件関連のエンドポイント
+app.post("/case/add", async (req, res) => {
+  try {
+    const { case_name, case_status, expected_revenue, representative, customer_id } = req.body;
+    console.log("リクエストを受け取りました:", req.body);
+
+    // 案件を登録
+    const newCase = await pool.query(
+      "INSERT INTO cases (case_name, case_status, expected_revenue, representative, customer_id) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+      [case_name, case_status, expected_revenue, representative, customer_id]
+    );
+
+    res.json({ success: true, case: newCase.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.json({ success: false });
+  }
+});
+
+app.use(express.static("web/public"));

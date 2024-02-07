@@ -14,6 +14,8 @@
         <button id="edit-button" class="btn btn-warning">編集</button>
         <button id="delete-button" class="btn btn-danger">削除</button>
         <a href="list.html" class="btn btn-primary">一覧に戻る</a>
+        <button id="add-case-button" class="btn btn-success">案件登録</button>
+
     </div>
 
     <script type="module">
@@ -90,7 +92,17 @@
                 console.error('エラー:', error);
                 alert('エラーが発生しました。');
             });
+
+            const addCaseButton = document.getElementById("add-case-button");
+
+            addCaseButton.addEventListener("click", () => {
+                // 顧客IDを含めて案件登録ページにリダイレクト
+                window.location.href = `case_registration.html?customerId=${customerId}`;
+            });
+
     </script>
+
+    
     
     <!-- BootstrapのJavaScriptと依存関係のリンク -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
