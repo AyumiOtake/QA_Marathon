@@ -96,7 +96,7 @@ app.put("/update-customer/:customerId", async (req, res) => {
 });
 
 // 案件関連のエンドポイント
-app.post("/case/add", async (req, res) => {
+app.post("/add-case", async (req, res) => {
   try {
     const { case_name, case_status, expected_revenue, representative, customer_id } = req.body;
     console.log("リクエストを受け取りました:", req.body);
@@ -114,4 +114,8 @@ app.post("/case/add", async (req, res) => {
   }
 });
 
+// サーバー公開用の静的ファイル設定
+app.use('/customer', express.static('web/customer'));
+app.use('/case', express.static('web/case'));
 app.use(express.static("web/public"));
+
