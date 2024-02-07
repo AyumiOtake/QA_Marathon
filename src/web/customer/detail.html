@@ -1,4 +1,4 @@
-<!-- customer/detail.html -->
+<!-- detail.html -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -15,8 +15,6 @@
         <button id="edit-button" class="btn btn-warning">編集</button>
         <button id="delete-button" class="btn btn-danger">削除</button>
         <a href="list.html" class="btn btn-primary">一覧に戻る</a>
-        <!-- 追加: 案件追加ボタン -->
-        <button id="add-case-button" class="btn btn-success">案件追加</button>
     </div>
 
     <script type="module">
@@ -30,52 +28,11 @@
         // 編集ボタンの要素を取得
         const editButton = document.getElementById("edit-button");
 
-        // 削除ボタンの要素を取得
-        const deleteButton = document.getElementById("delete-button");
-
-        // 案件追加ボタンの要素を取得
-        const addCaseButton = document.getElementById("add-case-button");
-
         // 編集ボタンがクリックされたときの処理
         editButton.addEventListener("click", () => {
             // 編集ページに遷移
             window.location.href = `update.html?customerId=${customerId}`;
         });
-
-        // 削除ボタンがクリックされたときの処理
-        deleteButton.addEventListener("click", () => {
-            if (confirm("本当に削除しますか？")) {
-                // データベースから顧客を削除
-                fetch(`${config.apiUrl}/delete-customer/${customerId}`, {
-                    method: 'DELETE',
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('顧客情報が正常に削除されました。');
-                        // 一覧ページに遷移
-                        window.location.href = 'list.html';
-                    } else {
-                        alert('顧客情報の削除に失敗しました。');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('エラーが発生しました。');
-                });
-            }
-        });
-
-       // 追加ボタンがクリックされたときの処理
-        addCaseButton.addEventListener("click", () => {
-       // 現在のURLからcustomerIdを取得
-        const urlParams = new URLSearchParams(window.location.search);
-        const customerId = urlParams.get('customerId');
-  
-       // 案件追加画面に遷移
-       window.location.href = `../case/add.html?customerId=${customerId}`;
-      });
-
 
         // 顧客詳細を表示する処理
         const customerDetailsContainer = document.getElementById("customer-details");

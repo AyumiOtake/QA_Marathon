@@ -11,7 +11,7 @@
         <button type="button" class="btn btn-primary" id="submitButton">送信</button>
     </div>
     <script type="module">
-        import config from '../config.js';
+      import config from '../config.js';
 
         window.addEventListener('load', displayConfirmation);
 
@@ -48,8 +48,7 @@
             .then(data => {
                 if (data.success) {
                     alert('顧客情報が正常に登録されました。');
-                    // 登録成功時にlist.htmlに遷移
-                    window.location.href = 'list.html';
+                    // ここでリダイレクトなど必要な処理を実行
                 } else {
                     alert('顧客情報の登録に失敗しました。');
                 }

@@ -21,18 +21,16 @@ app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
 
-// 顧客情報取得
 app.get("/customers", async (req, res) => {
   try {
     const customerData = await pool.query("SELECT * FROM customers");
-    res.json({ success: true, data: customerData.rows });
+    res.send(customerData.rows);
   } catch (err) {
     console.error(err);
-    res.json({ success: false, message: "Error fetching customer data" });
+    res.send("Error " + err);
   }
 });
 
-// 特定の顧客情報取得
 app.get("/customers/:customerId", async (req, res) => {
   try {
     const customerId = req.params.customerId;
@@ -49,11 +47,10 @@ app.get("/customers/:customerId", async (req, res) => {
   }
 });
 
-// 顧客追加
 app.post("/add-customer", async (req, res) => {
   try {
     const { company_name, industry, contact, location } = req.body;
-    console.log("Request received:", req.body);
+    console.log("リクエストを受け取りました:", req.body);
     const newCustomer = await pool.query(
       "INSERT INTO customers (company_name, industry, contact, location) VALUES ($1, $2, $3, $4) RETURNING *",
       [company_name, industry, contact, location]
@@ -61,31 +58,24 @@ app.post("/add-customer", async (req, res) => {
     res.json({ success: true, customer: newCustomer.rows[0] });
   } catch (err) {
     console.error(err);
-    res.json({ success: false, message: "Error adding customer" });
+    res.json({ success: false });
   }
 });
 
-// 顧客削除
 app.delete("/delete-customer/:customerId", async (req, res) => {
   try {
     const customerId = req.params.customerId;
-    const deleteCustomer = await pool.query("DELETE FROM customers WHERE customer_id = $1 RETURNING *", [customerId]);
-
-    if (deleteCustomer.rows.length > 0) {
-      res.json({ success: true });
-    } else {
-      res.json({ success: false, message: "Customer not found" });
-    }
+    const deleteCustomer = await pool.query("DELETE FROM customers WHERE customer_id = $1", [customerId]);
+    res.json({ success: true });
   } catch (err) {
     console.error(err);
-    res.json({ success: false, message: "Error deleting customer" });
+    res.json({ success: false });
   }
 });
 
-// 顧客情報更新
 app.put("/update-customer/:customerId", async (req, res) => {
   const customerId = req.params.customerId;
-  const updateData = req.body;
+  const updateData = req.body; // Use the entire request body as the update data
 
   try {
     const keys = Object.keys(updateData);
@@ -101,13 +91,8 @@ app.put("/update-customer/:customerId", async (req, res) => {
     res.json({ success: true, customer: updatedCustomer.rows[0] });
   } catch (err) {
     console.error(err);
-    res.json({ success: false, message: "Error updating customer" });
+    res.json({ success: false });
   }
 });
-
-
-// サーバー公開用の静的ファイル設定
-app.use('/customer', express.static('web/customer'));
-app.use('/case', express.static('web/case'));
 
 app.use(express.static("public"));
