@@ -36,8 +36,13 @@
         // 削除ボタンの要素を取得
         const deleteButton = document.getElementById("delete-button");
     
-        // 削除ボタンがクリックされたときの処理
-        deleteButton.addEventListener("click", () => {
+         // 削除ボタンがクリックされたときの処理
+    deleteButton.addEventListener("click", () => {
+        // 確認のダイアログを表示
+        const confirmDelete = confirm('本当に削除しますか？');
+        
+        // ダイアログでOKが押された場合の処理
+        if (confirmDelete) {
             // 顧客の削除処理
             fetch(`${config.apiUrl}/delete-customer/${customerId}`, {
                 method: 'DELETE',
@@ -56,8 +61,8 @@
                 console.error('エラー:', error);
                 alert('エラーが発生しました。');
             });
-        });
-    
+        }
+    });
         // 顧客詳細を表示する処理
         const customerDetailsContainer = document.getElementById("customer-details");
     
