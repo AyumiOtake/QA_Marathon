@@ -1,24 +1,23 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Add Case</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>案件情報入力</title>
     <!-- Bootstrap CSSの読み込み -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
     <div class="container mt-5">
-        <h2 class="mb-4">Add Case</h2>
-        <!-- 案件登録フォーム -->
-        <form id="add-case-form">
+        <h2 class="mb-4">案件情報を入力してください</h2>
+        <form id="case-form">
             <div class="form-group">
-                <label for="caseName">案件名:</label>
-                <input type="text" class="form-control" id="caseName" required>
+                <label for="case_name">案件名:</label>
+                <input type="text" class="form-control" id="case_name" name="case_name" required>
             </div>
             <div class="form-group">
-                <label for="caseStatus">案件状態:</label>
-                <select class="form-control" id="caseStatus" required>
+                <label for="case_status">案件状況:</label>
+                <select class="form-control" id="case_status" name="case_status" required>
                     <option value="新規">新規</option>
                     <option value="交渉中">交渉中</option>
                     <option value="契約締結">契約締結</option>
@@ -26,75 +25,36 @@
                 </select>
             </div>
             <div class="form-group">
-                <label for="expectedRevenue">予想収益:</label>
-                <input type="number" class="form-control" id="expectedRevenue" min="0" step="0.01">
+                <label for="expected_revenue">予想収益:</label>
+                <input type="number" class="form-control" id="expected_revenue" name="expected_revenue" min="0" step="0.01" required>
             </div>
             <div class="form-group">
                 <label for="representative">代表者名:</label>
-                <input type="text" class="form-control" id="representative" required>
+                <input type="text" class="form-control" id="representative" name="representative" required>
             </div>
-            <!-- 顧客IDはURLパラメータから取得 -->
-            <input type="hidden" id="customerId" value="">
-            <button type="submit" class="btn btn-primary">登録</button>
-            <a href="list.html" class="btn btn-secondary">キャンセル</a>
+            <button type="button" class="btn btn-primary" id="submitButton">送信</button>
         </form>
     </div>
-
     <script type="module">
-        // ExpressサーバのAPIエンドポイントのURL
-        import config from "../config.js";
+        import config from '../config.js';
 
-        // URLからcustomerIdを取得
-        const urlParams = new URLSearchParams(window.location.search);
-        const customerId = urlParams.get('customerId');
-
-        // 案件登録フォームの要素を取得
-        const addCaseForm = document.getElementById("add-case-form");
-
-        // 案件登録フォームが送信されたときの処理
-        addCaseForm.addEventListener("submit", (event) => {
-            event.preventDefault();
-
-            // フォームの入力値を取得
-            const caseName = document.getElementById("caseName").value;
-            const caseStatus = document.getElementById("caseStatus").value;
-            const expectedRevenue = parseFloat(document.getElementById("expectedRevenue").value) || 0;
-            const representative = document.getElementById("representative").value;
-
-            // フォームの入力値と顧客IDを使って案件を登録
-            fetch(`${config.apiUrl}/add-case`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    caseName,
-                    caseStatus,
-                    expectedRevenue,
-                    representative,
-                    customerId,
-                }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('案件が正常に登録されました。');
-                    // リダイレクト処理
-                    window.location.href = `customer/detail.html?customerId=${customerId}`;
-                } else {
-                    alert('案件の登録に失敗しました。');
-                }
-            })
-            .catch(error => {
-                console.error('エラー:', error);
-                alert('エラーが発生しました。');
+        document.getElementById('submitButton').addEventListener('click', function() {
+            const formData = new FormData(document.getElementById('case-form'));
+            const jsonData = {};
+            formData.forEach((value, key) => {
+                jsonData[key] = value;
             });
+
+            // フォームデータを sessionStorage に保存
+            sessionStorage.setItem('caseFormData', JSON.stringify(jsonData));
+
+            // リダイレクト
+            window.location.href = '/ayumi_otake/case/add-confirm.html';
         });
     </script>
-
-    <!-- BootstrapのJavaScriptと依存関係のリンク -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- BootstrapのJavaScriptの読み込み -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
 </html>

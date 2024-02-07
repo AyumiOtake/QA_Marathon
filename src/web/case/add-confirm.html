@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="mb-4">案件情報を確認してください</h2>
+        <div id="confirmation-details"></div>
+        <button type="button" class="btn btn-primary" id="editButton">編集</button>
+        <button type="button" class="btn btn-primary" id="submitButton">送信</button>
+    </div>
+    <script type="module">
+        import config from '../config.js';
+
+        window.addEventListener('load', displayConfirmation);
+
+        function displayConfirmation() {
+            const formDataString = sessionStorage.getItem('caseFormData');
+            if (formDataString) {
+                const formData = JSON.parse(formDataString);
+                const confirmationDetails = document.getElementById('confirmation-details');
+
+                for (const [key, value] of Object.entries(formData)) {
+                    const confirmationItem = document.createElement('div');
+                    confirmationItem.textContent = `${key}: ${value}`;
+                    confirmationDetails.appendChild(confirmationItem);
+                }
+            }
+        }
+
+        document.getElementById('editButton').addEventListener('click', function() {
+            window.location.href = 'add.html';
+        });
+
+        document.getElementById('submitButton').addEventListener('click', function() {
+            const formDataString = sessionStorage.getItem('caseFormData');
+            const formData = JSON.parse(formDataString);
+            
+            // データベースにデータを送信
+            fetch(config.apiUrl + '/case/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('案件情報が正常に登録されました。');
+                    
+                    // リダイレクト処理
+                    window.location.href = 'list.html';
+                } else {
+                    alert('案件情報の登録に失敗しました。');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('エラーが発生しました。');
+            });
+        });
+    </script>
+</body>
+</html>
