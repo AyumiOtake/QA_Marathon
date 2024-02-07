@@ -38,7 +38,7 @@
             const formData = JSON.parse(formDataString);
             
             // データベースにデータを送信
-            fetch(config.apiUrl + '/case/add', {
+            fetch(config.apiUrl + '/add-case', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
